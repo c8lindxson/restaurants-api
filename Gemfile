@@ -49,6 +49,7 @@ gem "sassc-rails"
 # gem "image_processing", "~> 1.2"
 
 gem "pundit"
+gem 'simple_token_authentication'
 
 
 gem "devise"
