@@ -1,4 +1,5 @@
 class Api::V1::RestaurantsController < Api::V1::BaseController
+  # because of the following line, we have access to current_user
   acts_as_token_authentication_handler_for User, except: [ :index, :show ]
   before_action :set_restaurant, only: [ :show, :update ]
 
@@ -19,6 +20,22 @@ class Api::V1::RestaurantsController < Api::V1::BaseController
     end
   end
 
+  def create
+    @restaurant = Restaurant.new(restaurant_params)
+    @restaurant.user = current_user
+    authorize @restaurant
+    if @restaurant.save
+      render :show, status: :created
+    else
+      render_error
+    end
+  end
+
+  def destroy
+    @restaurant.destroy
+    head :no_content
+  end
+
   private
 
   def set_restaurant
@@ -32,6 +49,6 @@ class Api::V1::RestaurantsController < Api::V1::BaseController
 
   def render_error
     render json: { errors: @restaurant.errors.full_messages },
-      status: :unprocessable_entity
+      status: :unprocessable_entity # 422 error
   end
 end
